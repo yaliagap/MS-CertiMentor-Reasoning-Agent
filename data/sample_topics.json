@@ -1,0 +1,34 @@
+{
+  "sample_topics": [
+    {
+      "name": "Azure AI Fundamentals",
+      "description": "Learn the fundamentals of artificial intelligence and machine learning on Azure",
+      "recommended_exam": "AI-900",
+      "difficulty": "beginner"
+    },
+    {
+      "name": "Azure Fundamentals",
+      "description": "Learn cloud computing basics and core Azure services",
+      "recommended_exam": "AZ-900",
+      "difficulty": "beginner"
+    },
+    {
+      "name": "Power Platform Fundamentals",
+      "description": "Learn to build apps, automate workflows, and analyze data with Power Platform",
+      "recommended_exam": "PL-900",
+      "difficulty": "beginner"
+    },
+    {
+      "name": "Azure Administrator",
+      "description": "Learn to manage Azure subscriptions, resources, storage, and virtual machines",
+      "recommended_exam": "AZ-104",
+      "difficulty": "intermediate"
+    },
+    {
+      "name": "Azure AI Engineer",
+      "description": "Learn to design and implement Azure AI solutions",
+      "recommended_exam": "AI-102",
+      "difficulty": "intermediate"
+    }
+  ]
+}

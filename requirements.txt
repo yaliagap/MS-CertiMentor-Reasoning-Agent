@@ -1,0 +1,17 @@
+# Core dependencies
+agent-framework>=0.1.0
+agent-framework-azure-ai  # Azure AI Foundry provider with AzureAIAgentClient
+openai>=1.0.0
+aiohttp>=3.9.0
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+
+# Azure SDK (for Azure AI Foundry and Key Vault)
+azure-identity>=1.15.0
+azure-keyvault-secrets>=4.7.0
+azure-ai-projects  # For AIProjectClient (persistent agents)
+azure-core>=1.26.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0

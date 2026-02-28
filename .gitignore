@@ -1,0 +1,93 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+data/temp/
+data/cache/
+
+# Test files (personal use, not for repo)
+test_mcp_integration.py
+test_mcp_debug.py
+tests/test_*.py
+!tests/__init__.py
+
+# Output files
+outputs/
+results/
+*.jsonl
+
+# Azure/OpenAI specific
+azure_*.json
+openai_*.log
+
+# Claude Code
+.claude/
+
+# Jupyter notebooks (if any)
+*.ipynb
+.ipynb_checkpoints/
+
+# Documentation drafts and internal notes
+docs/drafts/
+NOTES.md
+TODO.md
+CLAUDE.md
+AGENTS_STRUCTURE.md
+IMPLEMENTATION_SUMMARY.md
+PROJECT_STATUS.md
+CONFIGURACION_COMPLETA.md
+REFACTORING_SUMMARY.md
+MCP_INTEGRATION.md
+QUICKSTART.md
+*_SUMMARY.md
+output_*.txt
+*.bak

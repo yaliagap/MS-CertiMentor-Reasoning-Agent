@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "microsoft-agent-framework": {
+      "source": "rysweet/amplihack",
+      "sourceType": "github",
+      "computedHash": "29ca0e081e299d18e3c80ca9ae44788b83aeb8dff11eb88ba755eabf9c5fe90d"
+    }
+  }
+}
