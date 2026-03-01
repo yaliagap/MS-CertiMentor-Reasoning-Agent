@@ -625,6 +625,38 @@ The following screenshots demonstrate a complete end-to-end execution of the MS-
 
 ---
 
+---
+
+### 📊 Azure Application Insights - Observability
+
+**End-to-End Transaction Tracing**
+
+![Application Insights Workflow](screenshoots/AppInsightsWorkflow1.png)
+*Complete workflow trace in Azure Application Insights showing end-to-end transaction details with all agent interactions, custom properties (topics, level, email), and distributed tracing across the multi-agent system. OpenTelemetry integration captures every span for performance analysis and debugging.*
+
+**What This Shows:**
+- 🔍 **End-to-end transaction details** for the complete workflow execution
+- 📊 **Workflow steps breakdown** showing all 6 agent executions as spans
+- 🏷️ **Custom Properties** captured: `studentTopics`, `studentLevel`, `studentEmail`, `studySchedule`
+- ⏱️ **Performance metrics** for each agent and workflow phase
+- 🔗 **Distributed tracing** linking all operations across the multi-agent system
+- 📈 **Telemetry data** available for monitoring, alerting, and analysis in Azure Portal
+
+**Assessment Workflow Detailed Telemetry**
+
+![Application Insights Assessment](screenshoots/AppInsightsWorkflow2.png)
+*Deep dive into the assessment phase showing quiz generation (9.9s), evaluation (14.1s), and exam planning (3.5s) with rich custom properties including quiz results: 10 questions, 5 correct (50%), failed status, and domain-level performance breakdown.*
+
+**Assessment Telemetry Captured:**
+- 📝 **Quiz Metadata**: `total_questions: 10`, `user_answers_count: 10`
+- 📊 **Performance Metrics**: `correct_count: 5`, `score_percentage: 50.0`, `passed: false`
+- 🎯 **Domain Analysis**: `weak_domains_count: 2`, `strong_domains_count: 0`
+- ⏱️ **Timing Breakdown**: Quiz generation (9.9s), Assessment evaluation (14.1s), Exam planning (3.5s)
+- 🔍 **Workflow Phases**: Complete workflow (6.8 mins) → Preparation (24.6s) → Assessment (1.3 mins) → Evaluation (14.1s)
+- 📌 **Custom Properties**: All assessment results captured as searchable, filterable properties in Application Insights
+
+---
+
 ### 🎯 Key Observations from Demo
 
 ✅ **All 6 agents executed successfully** in sequential workflow
@@ -632,7 +664,7 @@ The following screenshots demonstrate a complete end-to-end execution of the MS-
 ✅ **Human-in-the-loop checkpoint** prevented premature assessment
 ✅ **Domain-specific analysis** identified strengths across all 3 exam domains
 ✅ **Actionable recommendations** provided clear next steps for exam preparation
-✅ **Observability traces** captured in Azure Application Insights (not shown)
+✅ **Full observability** with Azure Application Insights capturing all traces and custom properties
 
 ---
 
