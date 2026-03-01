@@ -10,6 +10,7 @@ from .learning_path_curator import create_learning_path_curator
 from .study_plan_generator import create_study_plan_generator
 from .engagement_agent import create_engagement_agent
 from .assessment_agent import create_assessment_agent
+from .assessment_evaluator_agent import create_assessment_evaluator_agent
 from .exam_plan_agent import create_exam_plan_agent
 
 
@@ -36,7 +37,7 @@ def create_azure_chat_client() -> AzureOpenAIChatClient:
 
 def create_all_agents(chat_client: AzureOpenAIChatClient = None) -> dict:
     """
-    Create all 5 specialized agents.
+    Create all 6 specialized agents.
 
     Each agent is created with:
     - Specific temperature (from config)
@@ -47,18 +48,20 @@ def create_all_agents(chat_client: AzureOpenAIChatClient = None) -> dict:
     1. Learning Path Curator (T=0.3) - Content discovery
     2. Study Plan Generator (T=0.4) - Planning
     3. Engagement Agent (T=0.6) - Motivation
-    4. Assessment Agent (T=0.2) - Evaluation
-    5. Exam Plan Agent (T=0.3) - Certification
+    4. Assessment Agent (T=0.2) - Quiz generation
+    5. Assessment Evaluator (T=0.3) - Educational feedback
+    6. Exam Plan Agent (T=0.3) - Certification readiness
 
     Args:
         chat_client: Optional AzureOpenAIChatClient. If None, creates a new one.
 
     Returns:
-        dict: Dictionary with all 5 agents
+        dict: Dictionary with all 6 agents
             - curator: Learning Path Curator
             - planner: Study Plan Generator
             - engagement: Engagement Agent
             - assessor: Assessment Agent
+            - evaluator: Assessment Evaluator Agent
             - exam_planner: Exam Plan Agent
     """
     # Create client if not provided
@@ -71,5 +74,6 @@ def create_all_agents(chat_client: AzureOpenAIChatClient = None) -> dict:
         "planner": create_study_plan_generator(chat_client),
         "engagement": create_engagement_agent(chat_client),
         "assessor": create_assessment_agent(chat_client),
+        "evaluator": create_assessment_evaluator_agent(chat_client),
         "exam_planner": create_exam_plan_agent(chat_client)
     }

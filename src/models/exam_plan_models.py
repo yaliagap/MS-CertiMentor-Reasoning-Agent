@@ -97,8 +97,8 @@ class DomainPerformance(BaseModel):
     exam_weight: str = Field(
         description="Percentage weight on the exam (e.g., '25-30%', '15-20%')"
     )
-    score: int = Field(
-        description="Performance score on this domain (0-100)",
+    score: float = Field(
+        description="Performance score on this domain (0-100, allows decimals)",
         ge=0,
         le=100
     )
@@ -118,8 +118,8 @@ class ReadinessAssessment(BaseModel):
         critical_risks: List of critical risk factors
         domain_breakdown: Performance breakdown by exam domain
     """
-    overall_score: int = Field(
-        description="Overall readiness score (0-100)",
+    overall_score: float = Field(
+        description="Overall readiness score (0-100, allows decimals)",
         ge=0,
         le=100
     )

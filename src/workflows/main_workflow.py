@@ -6,7 +6,12 @@ from .preparation_workflow import (
     run_preparation_workflow,
     print_preparation_results
 )
-from .assessment_workflow import run_assessment, run_exam_planning
+from .assessment_workflow import run_assessment, run_assessment_evaluation, run_exam_planning
+from src.utils.observability import (
+    trace_workflow_phase,
+    add_workflow_attributes,
+    create_custom_span
+)
 
 
 def print_banner(endpoint: str, model: str):
@@ -18,11 +23,12 @@ def print_banner(endpoint: str, model: str):
     print(f"[ENDPOINT] {endpoint}")
     print(f"[MODEL] {model}")
     print("\nThis system demonstrates:")
-    print("  [x] 5 Specialized agents with Azure OpenAI")
+    print("  [x] 6 Specialized agents with Azure OpenAI")
     print("  [x] Sequential Workflow orchestration")
     print("  [x] Human-in-the-loop checkpoints")
     print("  [x] Conditional workflow routing")
     print("  [x] Custom temperatures per agent")
+    print("  [x] Educational feedback with detailed explanations")
     print("="*70 + "\n")
 
 
@@ -128,6 +134,7 @@ def human_checkpoint():
         return True
 
 
+@trace_workflow_phase("complete_workflow")
 async def run_complete_workflow(agents: dict, endpoint: str, model: str):
     """
     Execute the complete multi-agent workflow.
@@ -147,7 +154,18 @@ async def run_complete_workflow(agents: dict, endpoint: str, model: str):
     print_banner(endpoint, model)
 
     # Get user input
-    topics, email, user_level, study_days_per_week, daily_hours = get_user_input()
+    with create_custom_span("user_input.collection"):
+        topics, email, user_level, study_days_per_week, daily_hours = get_user_input()
+
+    # Add workflow context attributes
+    add_workflow_attributes({
+        "student.topics": topics,
+        "student.email": email,
+        "student.level": user_level,
+        "student.study_days_per_week": study_days_per_week,
+        "student.daily_hours": daily_hours,
+        "student.weekly_hours": study_days_per_week * daily_hours
+    })
 
     print("\n" + "="*70)
     print("[START] Launching multi-agent workflow...")
@@ -206,7 +224,15 @@ async def run_complete_workflow(agents: dict, endpoint: str, model: str):
         study_plan_summary=study_plan_summary
     )
 
-    # Phase 4: Exam Readiness Evaluation (agent decides if ready or not)
+    # Phase 3B: Assessment Evaluation (detailed educational feedback)
+    feedback = await run_assessment_evaluation(
+        agents["evaluator"],
+        topics,
+        quiz,
+        user_answers
+    )
+
+    # Phase 4: Exam Readiness Evaluation (strategic certification recommendation)
     await run_exam_planning(agents["exam_planner"], topics, quiz, user_answers)
 
     # Summary
@@ -214,7 +240,7 @@ async def run_complete_workflow(agents: dict, endpoint: str, model: str):
     print("[SESSION COMPLETED]")
     print("="*70)
     print(f"\n[OK] Topics: {topics}")
-    print(f"[OK] Assessment: Completed and evaluated")
-    print(f"[OK] All 5 agents executed successfully")
+    print(f"[OK] Assessment: Completed with detailed feedback")
+    print(f"[OK] All 6 agents executed successfully")
     print("\nThank you for using MS-CertiMentor!")
     print("="*70 + "\n")

@@ -12,6 +12,11 @@ azure-keyvault-secrets>=4.7.0
 azure-ai-projects  # For AIProjectClient (persistent agents)
 azure-core>=1.26.0
 
+# Observability (OpenTelemetry + Azure Monitor)
+azure-monitor-opentelemetry>=1.2.0
+opentelemetry-api>=1.21.0
+opentelemetry-sdk>=1.21.0
+
 # Testing
 pytest>=7.4.0
 pytest-asyncio>=0.21.0

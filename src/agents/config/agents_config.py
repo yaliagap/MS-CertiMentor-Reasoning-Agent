@@ -14,11 +14,12 @@ class AgentConfig:
 
     # Agent-specific temperatures
     TEMPERATURES = {
-        "learning_path_curator": 0.3,  # Low for consistent, factual recommendations
-        "study_plan_generator": 0.4,   # Moderate for structured planning
-        "engagement_agent": 0.6,        # Higher for creative, motivational messages
-        "assessment_agent": 0.2,        # Very low for precise, objective questions
-        "exam_plan_agent": 0.3,         # Low for factual certification guidance
+        "learning_path_curator": 0.3,       # Low for consistent, factual recommendations
+        "study_plan_generator": 0.4,        # Moderate for structured planning
+        "engagement_agent": 0.6,            # Higher for creative, motivational messages
+        "assessment_agent": 0.2,            # Very low for precise, objective questions
+        "assessment_evaluator_agent": 0.3,  # Low-moderate for consistent, educational feedback
+        "exam_plan_agent": 0.3,             # Low for factual certification guidance
     }
 
     # Prompts directory
@@ -120,14 +121,26 @@ AGENT_METADATA = {
         ]
     },
     "assessment_agent": {
-        "role": "Evaluation",
-        "description": "Generates quizzes, grades answers, provides feedback",
+        "role": "Quiz Generation",
+        "description": "Generates certification-style quiz questions",
         "temperature": 0.2,
         "responsibilities": [
-            "Generate certification-style questions",
-            "Evaluate student readiness",
-            "Provide detailed feedback",
-            "Identify weak areas"
+            "Generate 10 multiple-choice questions",
+            "Ensure proper difficulty distribution",
+            "Cover all major certification domains",
+            "Include scenario-based questions"
+        ]
+    },
+    "assessment_evaluator_agent": {
+        "role": "Educational Feedback",
+        "description": "Reviews answers and provides detailed learning feedback",
+        "temperature": 0.3,
+        "responsibilities": [
+            "Review each question answered",
+            "Explain correct and incorrect answers",
+            "Identify learning gaps and strengths",
+            "Provide specific study recommendations",
+            "Offer encouraging, constructive feedback"
         ]
     },
     "exam_plan_agent": {

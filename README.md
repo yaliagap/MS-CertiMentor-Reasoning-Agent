@@ -45,8 +45,20 @@ Built for **AgentsLeague Battle #2 - Reasoning Agents** with Microsoft Foundry.
 - Questions mapped to exam domains with detailed explanations
 - Interactive quiz interface with answer collection
 
-✅ **Intelligent Exam Readiness Evaluation**
-- **AI-powered evaluation by Exam Plan Agent** - analyzes complete quiz performance
+✅ **Educational Feedback & Learning (NEW)**
+- **Question-by-question feedback** by Assessment Evaluator Agent
+- **Detailed explanations** for both correct and incorrect answers
+- **"Why correct is right"** explanations (2-4 sentences per question)
+- **"Why wrong is wrong"** explanations for mistakes (2-3 sentences)
+- **Specific study tips** for each incorrect answer
+- **Key concept identification** - highlights what each question tests
+- **Domain performance analysis** - groups results by certification domain
+- **Strengths & weaknesses** - clear identification of strong/weak areas
+- **Encouraging tone** - constructive feedback that motivates learning
+- **Actionable next steps** - prioritized focus areas based on mistakes
+
+✅ **Strategic Exam Readiness Evaluation**
+- **AI-powered strategic assessment by Exam Plan Agent** - holistic readiness evaluation
 - **Automatic score calculation** - overall score and per-domain breakdown
 - **Domain-level performance analysis** - maps questions to exam domains with weights
 - **3-tier decision logic** (ready ≥80%, nearly_ready 65-79%, not_ready <65%)
@@ -105,15 +117,24 @@ Built for **AgentsLeague Battle #2 - Reasoning Agents** with Microsoft Foundry.
         └─────────────────────────────────────────┘
                               ↓
         ┌─────────────────────────────────────────┐
-        │  5. Exam Plan Agent (Evaluator)         │
-        │     • Evaluates quiz performance        │
-        │     • Calculates domain scores          │
-        │     • Applies decision logic            │
-        │     • Provides personalized feedback    │
-        │     • Output: ExamPlan with readiness   │
+        │  5. Assessment Evaluator (NEW)          │
+        │     • Reviews each question/answer      │
+        │     • Explains correct/incorrect        │
+        │     • Identifies learning gaps          │
+        │     • Provides study tips               │
+        │     • Output: AssessmentFeedback        │
         └─────────────────────────────────────────┘
                               ↓
-              Intelligent Recommendation:
+        ┌─────────────────────────────────────────┐
+        │  6. Exam Plan Agent (Strategic)         │
+        │     • Evaluates overall readiness       │
+        │     • Calculates domain scores          │
+        │     • Applies decision logic            │
+        │     • Recommends certification action   │
+        │     • Output: ExamPlan with timeline    │
+        └─────────────────────────────────────────┘
+                              ↓
+              Strategic Recommendation:
          Ready (≥80%) | Nearly Ready (65-79%) | Not Ready (<65%)
               ↓                 ↓                      ↓
          Book Exam      Reinforce Weak Areas    Rebuild Foundation
@@ -137,8 +158,9 @@ Built for **AgentsLeague Battle #2 - Reasoning Agents** with Microsoft Foundry.
 | **Learning Path Curator** | 0.3 | Content Discovery | Search Microsoft Learn paths adapted to student level |
 | **Study Plan Generator** | 0.4 | Planning | Create realistic timelines based on student availability |
 | **Engagement Agent** | 0.6 | Motivation | Generate level-appropriate reminders with resource links |
-| **Assessment Agent** | 0.2 | Quiz Generation | Generate contextual quizzes with domain-mapped questions |
-| **Exam Plan Agent** | 0.3 | Intelligent Evaluator | Evaluate quiz performance, calculate domain scores, assess readiness, recommend actions |
+| **Assessment Agent** | 0.2 | Quiz Generation | Generate 10 contextual questions with proper difficulty distribution |
+| **Assessment Evaluator** | 0.3 | Educational Feedback | Review answers, explain correct/incorrect, provide study tips |
+| **Exam Plan Agent** | 0.3 | Strategic Advisor | Evaluate readiness, calculate scores, recommend certification actions |
 
 ---
 
@@ -206,14 +228,14 @@ Expected output:
 ### Main Execution
 
 ```bash
-python run_azure_workflow.py
+python main.py
 ```
 
 This runs the complete multi-agent workflow with:
 - ✅ Azure OpenAI Service integration
 - ✅ Sequential Workflow orchestration
-- ✅ All 5 specialized agents
-- ✅ Interactive quiz
+- ✅ All 6 specialized agents
+- ✅ Interactive quiz with detailed feedback
 - ✅ Human-in-the-loop checkpoints
 
 ---
@@ -221,7 +243,7 @@ This runs the complete multi-agent workflow with:
 ## 📊 Example Execution
 
 ```bash
-$ python run_azure_workflow.py
+$ python main.py
 
 ======================================================================
 [MS-CertiMentor] Multi-Agent System with Azure OpenAI
@@ -314,15 +336,100 @@ Your answer (A/B/C/D): A
 [ASSESSMENT COMPLETED]
 ✓ All 10 answers recorded
 
-Your responses will now be evaluated by the Exam Plan Agent...
-The agent will analyze your performance by domain and provide a detailed readiness assessment.
+Your responses will now be evaluated...
 
 ======================================================================
-PHASE 4: EXAM READINESS EVALUATION
+PHASE 3B: ASSESSMENT EVALUATION & FEEDBACK
+======================================================================
+
+[AGENT: ASSESSMENT_EVALUATOR]
+Reviewing your answers and providing detailed feedback...
+
+📊 ASSESSMENT EVALUATION RESULTS
+======================================================================
+
+📈 OVERALL PERFORMANCE:
+  Score: 8/10 (80.0%)
+  Status: ✅ PASSED
+  Threshold: 70% (7/10 questions)
+
+📚 PERFORMANCE BY DOMAIN:
+
+  🟢 Azure AI Services
+     Score: 3/3 (100.0%)
+     Status: STRONG
+
+  🟡 Machine Learning on Azure
+     Score: 3/4 (75.0%)
+     Status: STRONG
+
+  🟡 Natural Language Processing
+     Score: 2/3 (66.7%)
+     Status: ADEQUATE
+
+💪 STRENGTHS:
+  ✓ Azure AI Services (100% - excellent understanding)
+  ✓ Machine Learning fundamentals (75% - solid grasp)
+
+⚠️ AREAS FOR IMPROVEMENT:
+  • Natural Language Processing (66.7% - needs review of NLP services)
+
+======================================================================
+📝 DETAILED QUESTION FEEDBACK
+======================================================================
+
+✅ Question 1 - Azure AI Services
+======================================================================
+Question: Which Azure service provides pre-built AI capabilities through REST APIs?
+
+Your answer: B | Correct answer: B
+
+✅ CORRECT!
+📖 Explanation: Azure Cognitive Services provides pre-built AI capabilities through
+    REST APIs, allowing developers to add intelligent features without deep AI expertise.
+🎯 Key concept: Understanding Azure Cognitive Services as pre-built AI APIs
+
+❌ Question 4 - Machine Learning on Azure
+======================================================================
+Question: What is the purpose of feature engineering in machine learning?
+
+Your answer: C | Correct answer: A
+
+❌ INCORRECT
+📖 Why correct answer is right: Feature engineering transforms raw data into meaningful
+    features that improve model performance. It's crucial for helping ML models learn patterns.
+⚠️ Why your answer is wrong: Normalization is one technique used in feature engineering,
+    but it's not the primary purpose. Feature engineering is broader and includes creating
+    new features from existing data.
+💡 Study tip: Review the ML lifecycle and focus on the data preparation phase, particularly
+    how feature engineering transforms and creates features to improve model accuracy.
+🎯 Key concept: Feature engineering as data transformation for ML models
+
+... [8 more questions with detailed feedback]
+
+======================================================================
+💬 OVERALL FEEDBACK
+======================================================================
+
+You demonstrated strong understanding of Azure AI Services with perfect scores. Your
+grasp of Machine Learning fundamentals is solid at 75%. However, you should strengthen
+your knowledge of Natural Language Processing services like Text Analytics and LUIS,
+where you scored 66.7%.
+
+✨ Great job overall! With focused review of NLP concepts, you'll be well-prepared
+for the certification exam.
+
+🎯 NEXT FOCUS AREAS:
+  1. Review Azure Text Analytics and Translator service documentation
+  2. Complete hands-on labs for NLP workloads, especially sentiment analysis
+  3. Practice identifying which Azure AI service fits specific scenarios
+
+======================================================================
+PHASE 4: STRATEGIC EXAM READINESS EVALUATION
 ======================================================================
 
 [AGENT: EXAM_PLAN_AGENT]
-Evaluating quiz performance across domains...
+Analyzing overall readiness and providing certification recommendation...
 
 📋 EXAM READINESS ASSESSMENT
 Certification: AI-900 - Microsoft Azure AI Fundamentals
@@ -381,7 +488,7 @@ Registration: https://learn.microsoft.com/certifications/exams/ai-900
 
 ```
 MS-CertiMentor-Reasoning-Agent/
-├── run_azure_workflow.py        # ⭐ Main entry point
+├── main.py                       # ⭐ Main entry point
 ├── test_azure_connection.py     # Connection verification
 ├── requirements.txt              # Dependencies
 ├── .env.example                  # Environment template
@@ -389,12 +496,13 @@ MS-CertiMentor-Reasoning-Agent/
 ├── LICENSE                       # MIT License
 │
 ├── src/
-│   ├── agents/                   # Agent definitions
+│   ├── agents/                   # Agent definitions (6 specialized agents)
 │   │   ├── agents_factory.py    # Agent creation factory
 │   │   ├── learning_path_curator.py
 │   │   ├── study_plan_generator.py
 │   │   ├── engagement_agent.py
 │   │   ├── assessment_agent.py
+│   │   ├── assessment_evaluator_agent.py  # ⭐ NEW: Educational feedback
 │   │   ├── exam_plan_agent.py
 │   │   ├── config/
 │   │   │   └── agents_config.py  # Agent configurations
@@ -403,6 +511,7 @@ MS-CertiMentor-Reasoning-Agent/
 │   │       ├── study_plan_generator.txt
 │   │       ├── engagement_agent.txt
 │   │       ├── assessment_agent.txt
+│   │       ├── assessment_evaluator_agent.txt  # ⭐ NEW
 │   │       └── exam_plan_agent.txt
 │   │
 │   ├── models/                   # Pydantic data models
@@ -410,6 +519,7 @@ MS-CertiMentor-Reasoning-Agent/
 │   │   ├── learning_path_models.py  # Learning path data
 │   │   ├── study_plan_models.py # Study plan data
 │   │   ├── engagement_models.py # Engagement & reminder data
+│   │   ├── assessment_evaluator_models.py  # ⭐ NEW: Feedback models
 │   │   └── exam_plan_models.py  # Exam readiness & certification planning
 │   │
 │   ├── tools/                    # Tool functions
@@ -596,10 +706,12 @@ Scenario 3: Not Ready
 | **Planner-Executor** | Curator plans → Others execute | Clear role separation |
 | **Sequential Orchestration** | `SequentialBuilder` | Structured agent pipeline |
 | **Iterative Refinement** | Assessment loop (max 3) | Learning from failure |
-| **Role-Based Specialization** | 5 distinct agents | Reduce overlap, increase quality |
+| **Role-Based Specialization** | 6 distinct agents | Reduce overlap, increase quality |
 | **Human-in-the-Loop** | Checkpoint before assessment | Safety & control |
+| **Educational Feedback Loop** | Assessment Evaluator explains answers | Immediate learning from mistakes |
+| **Separation of Concerns** | Evaluator (learning) vs Exam Planner (strategy) | Educational vs strategic assessment |
 | **Intelligent Evaluator** | Exam Plan Agent analyzes quiz holistically | AI-powered assessment, not fixed rules |
-| **Context-Aware Decision Making** | Agent receives full quiz context | Domain-aware, personalized recommendations |
+| **Context-Aware Decision Making** | Agents receive full quiz context | Domain-aware, personalized recommendations |
 
 ---
 
@@ -609,11 +721,16 @@ Scenario 3: Not Ready
 
 - [x] Multi-agent orchestration with Sequential Workflows
 - [x] Azure OpenAI Service integration
-- [x] 5 specialized agents with custom temperatures
-- [x] Structured outputs using Pydantic models (Quiz, CuratedLearningPlan, StudyPlan, EngagementPlan, ExamPlan)
+- [x] **6 specialized agents** with custom temperatures (NEW: Assessment Evaluator)
+- [x] Structured outputs using Pydantic models (Quiz, AssessmentFeedback, CuratedLearningPlan, StudyPlan, EngagementPlan, ExamPlan)
 - [x] Microsoft Learn MCP integration
 - [x] Interactive certification-style assessments
 - [x] Human approval checkpoints
+- [x] **Question-by-question educational feedback** (NEW: explains correct/incorrect answers)
+- [x] **Detailed learning explanations** (NEW: why correct is right, why wrong is wrong)
+- [x] **Specific study tips** (NEW: actionable guidance for each mistake)
+- [x] **Key concept identification** (NEW: highlights what each question tests)
+- [x] **Encouraging constructive tone** (NEW: motivational feedback regardless of score)
 - [x] **AI-powered quiz evaluation** (no fixed pass/fail thresholds)
 - [x] **Intelligent feedback loop** (always provides guidance, regardless of score)
 - [x] **Level-aware learning path curation** (beginner/intermediate/advanced)
@@ -628,6 +745,7 @@ Scenario 3: Not Ready
 - [x] **Personalized recommendations** based on question-level performance
 - [x] Milestone tracking with validation checkpoints
 - [x] Buffer/rest session management
+- [x] **Azure Application Insights observability** (spans, traces, custom attributes)
 
 ### 🔮 Future Enhancements
 
@@ -759,7 +877,85 @@ Generated by the Assessment Agent for student evaluation. The quiz contains doma
 }
 ```
 
-**Note**: The Assessment Agent generates the quiz but does NOT evaluate it. Student answers are collected and sent to the Exam Plan Agent for intelligent evaluation.
+**Note**: The Assessment Agent generates the quiz but does NOT evaluate answers. Student responses are collected and sent to both the Assessment Evaluator (for educational feedback) and Exam Plan Agent (for strategic readiness evaluation).
+
+### AssessmentFeedback (Assessment Evaluator Agent) ⭐ NEW
+```python
+{
+  "total_questions": 10,
+  "correct_count": 7,
+  "incorrect_count": 3,
+  "score_percentage": 70.0,
+  "passed": true,
+  "questions_feedback": [
+    {
+      "question_number": 1,
+      "domain": "Azure AI Services",
+      "question_text": "What is Azure Cognitive Services?",
+      "student_answer": "B",
+      "correct_answer": "B",
+      "is_correct": true,
+      "correct_explanation": "Azure Cognitive Services is a set of pre-built AI APIs that enable developers to add intelligent features to applications without deep AI expertise...",
+      "incorrect_explanation": null,
+      "key_concept": "Understanding Azure Cognitive Services as pre-built AI APIs",
+      "study_tip": null
+    },
+    {
+      "question_number": 2,
+      "domain": "Machine Learning",
+      "question_text": "What is supervised learning?",
+      "student_answer": "C",
+      "correct_answer": "A",
+      "is_correct": false,
+      "correct_explanation": "Supervised learning is a machine learning approach where the model is trained on labeled data...",
+      "incorrect_explanation": "Your answer describes unsupervised learning. Supervised learning requires labeled training data with known correct answers.",
+      "key_concept": "Distinction between supervised and unsupervised learning",
+      "study_tip": "Review the key difference: supervised uses labeled data, unsupervised finds patterns in unlabeled data."
+    }
+  ],
+  "domain_performance": [
+    {
+      "domain_name": "Azure AI Services",
+      "total_questions": 3,
+      "correct_answers": 2,
+      "score_percentage": 66.7,
+      "status": "adequate"
+    },
+    {
+      "domain_name": "Machine Learning on Azure",
+      "total_questions": 4,
+      "correct_answers": 3,
+      "score_percentage": 75.0,
+      "status": "strong"
+    }
+  ],
+  "strengths": [
+    "Machine Learning on Azure (75% - strong grasp of ML fundamentals)",
+    "Applied scenario questions (3/4 correct)"
+  ],
+  "weaknesses": [
+    "Azure AI Services (66.7% - need to review Cognitive Services APIs)",
+    "Natural Language Processing (66.7% - concepts need reinforcement)"
+  ],
+  "overall_feedback": "You demonstrated solid understanding of Machine Learning fundamentals with 75% accuracy. Your ability to analyze scenario-based questions is a strength. Focus on strengthening Azure AI Services and NLP concepts.",
+  "motivational_message": "Great job on ML concepts! With focused review of Azure AI services, you'll be well-prepared for the exam.",
+  "next_focus_areas": [
+    "Review Azure Cognitive Services documentation, focusing on Computer Vision and Text Analytics APIs",
+    "Complete hands-on labs for NLP workloads",
+    "Practice scenario questions requiring service selection"
+  ]
+}
+```
+
+**Key Features:**
+- **Question-by-Question Feedback**: Detailed explanation for each answer (correct and incorrect)
+- **Educational Explanations**: "Why correct is right" + "Why wrong is wrong" for mistakes
+- **Study Tips**: Specific, actionable guidance for each incorrect answer
+- **Key Concepts**: Highlights the learning objective being tested
+- **Domain Performance**: Groups results by certification domain
+- **Strengths & Weaknesses**: Clear identification of strong/weak areas
+- **Encouraging Tone**: Constructive, motivational feedback regardless of score
+- **Actionable Next Steps**: Prioritized focus areas based on performance
 
 ### ExamPlan (Exam Plan Agent)
 ```python
@@ -873,11 +1069,11 @@ This ensures every learning session reminder links directly to the correct Micro
 
 | Criterion | Weight | Implementation |
 |-----------|--------|---------------|
-| **Accuracy & Relevance** | 25% | Relevant paths, proper exam recommendations |
-| **Reasoning & Multi-step Thinking** | 25% | Sequential workflow, clear agent collaboration |
-| **Reliability & Safety** | 20% | Iteration limits, human checkpoints, error handling |
-| **User Experience** | 15% | Polished CLI, clear output, interactive quiz |
-| **Creativity** | 15% | Iterative refinement, temperature tuning, engagement |
+| **Accuracy & Relevance** | 25% | Relevant paths, proper exam recommendations, accurate feedback |
+| **Reasoning & Multi-step Thinking** | 25% | 6 specialized agents, sequential workflow, educational feedback loop, strategic assessment |
+| **Reliability & Safety** | 20% | Iteration limits, human checkpoints, constructive feedback, observability |
+| **User Experience** | 15% | Polished CLI, clear output, interactive quiz, detailed explanations, encouraging tone |
+| **Creativity** | 15% | Dual-layer evaluation (educational + strategic), temperature tuning, adaptive engagement |
 
 ---
 
@@ -886,9 +1082,37 @@ This ensures every learning session reminder links directly to the correct Micro
 - ✅ Human approval required before assessment
 - ✅ Maximum 3 assessment attempts (prevents infinite loops)
 - ✅ Objective 70% passing threshold
-- ✅ Constructive feedback on failures
-- ✅ Educational focus only (no exam dumps)
+- ✅ **Detailed educational feedback** - explains correct/incorrect answers to promote learning
+- ✅ **Encouraging tone** - constructive feedback that motivates, not discourages
+- ✅ **Separation of learning and evaluation** - Educational feedback before strategic assessment
+- ✅ Constructive guidance regardless of score (no "game over")
+- ✅ Educational focus only (no exam dumps, teaches concepts)
 - ✅ Privacy-conscious (console-only notifications in MVP)
+- ✅ Observability with Azure Application Insights (opt-in)
+
+---
+
+## 📊 Observability
+
+The system includes comprehensive observability with Azure Application Insights:
+
+- **Workflow Phases**: All major phases traced (preparation, assessment, evaluation, exam planning)
+- **Agent Executions**: Each agent run captured with duration and tokens
+- **Custom Spans**: Fine-grained tracing (quiz generation, evaluation, user input)
+- **Custom Attributes**: 40+ attributes including student data, scores, domain performance
+- **Azure OpenAI Calls**: Automatic instrumentation of API calls
+- **GenAI Semantic Conventions**: Follows OpenTelemetry standards
+
+**Setup:**
+1. Add `APPLICATION_INSIGHTS_CONNECTION_STRING` to `.env`
+2. Set `ENABLE_OBSERVABILITY=true`
+3. Run workflow - traces automatically sent to Azure Portal
+
+**View Traces:**
+- Azure Portal → Application Insights → Transaction Search
+- Use Kusto queries in Logs blade for analysis
+
+See **[OBSERVABILITY.md](OBSERVABILITY.md)** for complete documentation, setup guide, and example queries.
 
 ---
 

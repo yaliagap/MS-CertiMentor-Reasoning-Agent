@@ -6,6 +6,7 @@ from agent_framework.orchestrations import SequentialBuilder
 import json
 import re
 from src.models import CuratedLearningPlan, StudyPlan, EngagementPlan, ReminderType, ExamPlan, DomainStatus
+from src.utils.observability import trace_workflow_phase, add_workflow_attributes
 
 
 def extract_json_from_text(text: str) -> dict:
@@ -64,6 +65,7 @@ def create_preparation_workflow(curator, planner, engagement):
     ).build()
 
 
+@trace_workflow_phase("preparation")
 async def run_preparation_workflow(
     workflow,
     topics: str,
@@ -89,6 +91,14 @@ async def run_preparation_workflow(
             - curated_plan: CuratedLearningPlan object from curator (if available)
             - study_plan: StudyPlan object from planner (if available)
     """
+    # Add preparation context for observability
+    add_workflow_attributes({
+        "preparation.topics": topics,
+        "preparation.user_level": user_level,
+        "preparation.study_days_per_week": study_days_per_week,
+        "preparation.daily_hours": daily_hours
+    })
+
     # Build initial prompt with student context (each agent's instructions define their specific tasks)
     initial_prompt = f"""Student Profile:
 - Certification Goal: {topics}

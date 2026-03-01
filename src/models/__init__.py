@@ -43,6 +43,11 @@ from .exam_plan_models import (
     RecommendedAction,
     DomainStatus
 )
+from .assessment_evaluator_models import (
+    AssessmentFeedback,
+    QuestionFeedback,
+    DomainPerformanceSummary
+)
 
 __all__ = [
     # Quiz models
@@ -81,5 +86,9 @@ __all__ = [
     "ReadinessStatus",
     "ConfidenceLevel",
     "RecommendedAction",
-    "DomainStatus"
+    "DomainStatus",
+    # Assessment evaluator models
+    "AssessmentFeedback",
+    "QuestionFeedback",
+    "DomainPerformanceSummary"
 ]
