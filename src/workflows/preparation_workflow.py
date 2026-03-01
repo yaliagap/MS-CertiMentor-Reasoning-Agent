@@ -5,7 +5,7 @@ Curator -> Planner -> Engagement
 from agent_framework.orchestrations import SequentialBuilder
 import json
 import re
-from src.models import CuratedLearningPlan, StudyPlan
+from src.models import CuratedLearningPlan, StudyPlan, EngagementPlan, ReminderType, ExamPlan, DomainStatus
 
 
 def extract_json_from_text(text: str) -> dict:
@@ -64,7 +64,14 @@ def create_preparation_workflow(curator, planner, engagement):
     ).build()
 
 
-async def run_preparation_workflow(workflow, topics: str, email: str, user_level: str = "beginner"):
+async def run_preparation_workflow(
+    workflow,
+    topics: str,
+    email: str,
+    user_level: str = "beginner",
+    study_days_per_week: int = 5,
+    daily_hours: float = 2.0
+):
     """
     Execute the preparation workflow.
 
@@ -73,6 +80,8 @@ async def run_preparation_workflow(workflow, topics: str, email: str, user_level
         topics: Student certification topics
         email: Student email for reminders
         user_level: User experience level (beginner, intermediate, advanced)
+        study_days_per_week: Number of days per week the student can study
+        daily_hours: Number of hours per day the student can dedicate
 
     Returns:
         tuple: (conversation, curated_plan, study_plan)
@@ -80,17 +89,15 @@ async def run_preparation_workflow(workflow, topics: str, email: str, user_level
             - curated_plan: CuratedLearningPlan object from curator (if available)
             - study_plan: StudyPlan object from planner (if available)
     """
-    # Build initial prompt with structured guidance
-    initial_prompt = f"""Certification Goal: {topics}
-Student Email: {email}
-Student Level: {user_level}
+    # Build initial prompt with student context (each agent's instructions define their specific tasks)
+    initial_prompt = f"""Student Profile:
+- Certification Goal: {topics}
+- Email: {email}
+- Experience Level: {user_level}
+- Study Availability: {study_days_per_week} days/week, {daily_hours} hours/day
+- Total Weekly Capacity: {study_days_per_week * daily_hours} hours/week
 
-Task breakdown:
-1. Learning Path Curator: Use MCP tools to find and curate 1-3 highly relevant Microsoft Learn paths. Return structured JSON with priority domains, learning paths with modules, and coverage summary.
-2. Study Plan Generator: Based on the curated paths, create a detailed study schedule with daily sessions, milestones, and time estimates.
-3. Engagement Agent: Set up reminder schedule and send motivational message.
-
-Begin with the curator."""
+Create a complete certification preparation plan for this student."""
 
     # Execute workflow
     conversation = []
@@ -149,7 +156,7 @@ def print_preparation_results(conversation: list):
 
             # Special handling for Learning Path Curator structured output
             if author == "learning_path_curator":
-                print(f"\n[AGENTE: {author.upper()}]")
+                print(f"\n[AGENT: {author.upper()}]")
                 print("-" * 70)
 
                 try:
@@ -205,7 +212,7 @@ def print_preparation_results(conversation: list):
 
             # Special handling for Study Plan Generator structured output
             elif author == "study_plan_generator":
-                print(f"\n[AGENTE: {author.upper()}]")
+                print(f"\n[AGENT: {author.upper()}]")
                 print("-" * 70)
 
                 try:
@@ -256,6 +263,168 @@ def print_preparation_results(conversation: list):
                         print(f"\n🔑 KEY SUCCESS FACTORS:")
                         for factor in plan.success_factors[:3]:
                             print(f"  • {factor}")
+
+                except Exception as e:
+                    # Fallback to plain text if parsing fails
+                    print(f"[WARNING] Could not parse structured output: {e}")
+                    print(msg.text)
+
+            # Special handling for Engagement Agent structured output
+            elif author == "engagement_agent":
+                print(f"\n[AGENT: {author.upper()}]")
+                print("-" * 70)
+
+                try:
+                    # Try to parse structured output
+                    if hasattr(msg, 'structured_output') and msg.structured_output:
+                        plan = msg.structured_output
+                    else:
+                        # Fallback: parse from text (handles markdown)
+                        plan_data = extract_json_from_text(msg.text)
+                        plan = EngagementPlan(**plan_data)
+
+                    # Display engagement plan nicely
+                    print(f"\n📬 ENGAGEMENT & REMINDER PLAN")
+                    print(f"Certification: {plan.certification_goal}")
+                    print(f"Student Level: {plan.user_level}")
+                    print(f"Study Duration: {plan.study_duration_weeks} weeks")
+                    print(f"Total Reminders: {plan.total_reminders}\n")
+
+                    # Reminder breakdown
+                    print("📊 REMINDER BREAKDOWN:")
+                    print(f"  • Session reminders: {plan.get_session_count()}")
+                    print(f"  • Milestone reminders: {plan.get_milestone_count()}")
+                    print(f"  • Assessment reminders: {len(plan.get_reminders_by_type(ReminderType.ASSESSMENT))}")
+                    print(f"  • Buffer reminders: {len(plan.get_reminders_by_type(ReminderType.BUFFER))}")
+                    print(f"  • Recovery reminders: {len(plan.get_reminders_by_type(ReminderType.RECOVERY))}")
+
+                    # Motivation strategy
+                    print(f"\n🎯 MOTIVATION STRATEGY:")
+                    print(f"  {plan.motivation_strategy}")
+
+                    # Sample reminders (show first 3)
+                    print(f"\n💬 SAMPLE REMINDERS (showing first 3 of {len(plan.reminders)}):")
+                    for i, reminder in enumerate(plan.reminders[:3], 1):
+                        reminder_icon = {
+                            ReminderType.SESSION: "📖",
+                            ReminderType.MILESTONE: "🎯",
+                            ReminderType.ASSESSMENT: "✍️",
+                            ReminderType.BUFFER: "⏸️",
+                            ReminderType.RECOVERY: "🔄"
+                        }.get(reminder.reminder_type, "📌")
+
+                        print(f"\n  {reminder_icon} {reminder.date_time} - {reminder.study_item}")
+                        print(f"     Type: {reminder.reminder_type.value}")
+                        print(f"     Message: {reminder.reminder}")
+                        if reminder.link:
+                            print(f"     Link: {reminder.link[:60]}..." if len(reminder.link) > 60 else f"     Link: {reminder.link}")
+                        else:
+                            print(f"     Link: (General milestone - no specific resource)")
+
+                    if len(plan.reminders) > 3:
+                        print(f"\n     ... and {len(plan.reminders) - 3} more reminders")
+
+                    # Accountability tips
+                    print(f"\n💪 ACCOUNTABILITY TIPS:")
+                    for tip in plan.accountability_tips:
+                        print(f"  • {tip}")
+
+                except Exception as e:
+                    # Fallback to plain text if parsing fails
+                    print(f"[WARNING] Could not parse structured output: {e}")
+                    print(msg.text)
+
+            # Special handling for Exam Plan Agent structured output
+            elif author == "exam_plan_agent":
+                print(f"\n[AGENT: {author.upper()}]")
+                print("-" * 70)
+
+                try:
+                    # Try to parse structured output
+                    if hasattr(msg, 'structured_output') and msg.structured_output:
+                        plan = msg.structured_output
+                    else:
+                        # Fallback: parse from text (handles markdown)
+                        plan_data = extract_json_from_text(msg.text)
+                        plan = ExamPlan(**plan_data)
+
+                    # Display exam plan nicely
+                    print(f"\n📋 EXAM READINESS ASSESSMENT")
+                    print(f"Certification: {plan.exam.code} - {plan.exam.name}")
+                    print(f"Level: {plan.exam.level.value.capitalize()}")
+                    print(f"Registration: {plan.exam.registration_url}\n")
+
+                    # Readiness assessment
+                    status_icon = {
+                        "ready": "✅",
+                        "nearly_ready": "⚠️",
+                        "not_ready": "❌"
+                    }.get(plan.readiness_assessment.status.value, "❓")
+
+                    print(f"📊 READINESS STATUS:")
+                    print(f"  {status_icon} Status: {plan.readiness_assessment.status.value.upper().replace('_', ' ')}")
+                    print(f"  📈 Overall Score: {plan.readiness_assessment.overall_score}%")
+                    print(f"  🎯 Confidence: {plan.readiness_assessment.confidence_level.value.capitalize()}")
+
+                    # Domain breakdown
+                    print(f"\n📚 DOMAIN PERFORMANCE:")
+                    for domain in plan.readiness_assessment.domain_breakdown:
+                        status_icon = {
+                            DomainStatus.STRONG: "🟢",
+                            DomainStatus.ADEQUATE: "🟡",
+                            DomainStatus.WEAK: "🔴"
+                        }.get(domain.status, "⚪")
+
+                        print(f"\n  {status_icon} {domain.domain_name}")
+                        print(f"     Weight: {domain.exam_weight} | Score: {domain.score}% | Status: {domain.status.value}")
+
+                    # Critical risks
+                    if plan.readiness_assessment.critical_risks:
+                        print(f"\n⚠️ CRITICAL RISKS ({len(plan.readiness_assessment.critical_risks)}):")
+                        for risk in plan.readiness_assessment.critical_risks:
+                            print(f"  • {risk}")
+
+                    # Recommendation
+                    action_icon = {
+                        "book_exam": "✅",
+                        "delay_and_reinforce": "⚠️",
+                        "rebuild_foundation": "🔄"
+                    }.get(plan.recommendation.action.value, "❓")
+
+                    print(f"\n💡 RECOMMENDATION:")
+                    print(f"  {action_icon} Action: {plan.recommendation.action.value.upper().replace('_', ' ')}")
+                    print(f"  📝 Justification: {plan.recommendation.justification}")
+
+                    # Preparation timeline
+                    print(f"\n⏱️ PREPARATION TIMELINE:")
+                    if plan.preparation_timeline.days_needed:
+                        print(f"  • Days needed: {plan.preparation_timeline.days_needed}")
+                        if plan.preparation_timeline.suggested_exam_date_range:
+                            print(f"  • Suggested exam date: {plan.preparation_timeline.suggested_exam_date_range}")
+                    else:
+                        print(f"  • Ready to book now!")
+                        if plan.preparation_timeline.suggested_exam_date_range:
+                            print(f"  • Suggested booking: {plan.preparation_timeline.suggested_exam_date_range}")
+                    print(f"  • Rationale: {plan.preparation_timeline.rationale}")
+
+                    # Targeted next steps
+                    if plan.targeted_next_steps:
+                        print(f"\n🎯 TARGETED NEXT STEPS ({len(plan.targeted_next_steps)}):")
+                        for i, action in enumerate(plan.targeted_next_steps, 1):
+                            print(f"\n  {i}. Focus: {action.focus_domain}")
+                            print(f"     Action: {action.recommended_action}")
+
+                    # Exam strategy
+                    if plan.exam_strategy:
+                        print(f"\n🧠 EXAM STRATEGY:")
+                        for tip in plan.exam_strategy:
+                            print(f"  • {tip}")
+
+                    # Exam day tips
+                    if plan.exam_day_tips:
+                        print(f"\n📝 EXAM DAY TIPS:")
+                        for tip in plan.exam_day_tips:
+                            print(f"  • {tip}")
 
                 except Exception as e:
                     # Fallback to plain text if parsing fails

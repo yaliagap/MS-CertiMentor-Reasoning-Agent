@@ -18,20 +18,24 @@ Built for **AgentsLeague Battle #2 - Reasoning Agents** with Microsoft Foundry.
 
 ✅ **Intelligent Learning Path Curation**
 - Real-time integration with Microsoft Learn via MCP (Model Context Protocol)
+- **Level-aware content selection** (beginner, intermediate, advanced)
 - Priority domain identification with exam weight analysis
 - Relevance scoring (1-10) for each learning path
 - Module-level breakdown with importance rationale
 
 ✅ **Personalized Study Planning**
-- Week-by-week structured schedules
+- **Customized based on student availability** (days per week, hours per day)
+- Week-by-week structured schedules aligned with student capacity
 - Daily session breakdown with specific objectives
 - 4 milestone system (25%, 50%, 75%, 100%) with validation methods
 - Rest days and buffer time automatically incorporated
+- Realistic timelines that match student commitment
 
-✅ **Automated Engagement**
-- Scheduled study reminders
-- Motivational messaging
-- Progress tracking
+✅ **Automated Engagement & Accountability**
+- **Adaptive tone** based on student experience level
+- Scheduled study reminders with direct resource URLs
+- Motivational messaging tailored to progress
+- Progress tracking with milestone celebrations
 
 ✅ **Readiness Assessment**
 - 10-question certification-style quiz
@@ -40,10 +44,14 @@ Built for **AgentsLeague Battle #2 - Reasoning Agents** with Microsoft Foundry.
 - Scenario-based questions
 - Detailed explanations with Microsoft Learn references
 
-✅ **Exam Planning**
-- Certification recommendation based on performance
-- Registration details and resources
-- Exam day preparation tips
+✅ **Exam Readiness & Certification Planning**
+- **Intelligent readiness assessment** with 3-tier decision logic (ready/nearly_ready/not_ready)
+- **Domain-level performance breakdown** showing score, exam weight, and status per domain
+- **Preparation timeline calculator** with realistic date suggestions and rationale
+- **Critical risk detection** for high-weight domains scoring below 60%
+- Certification recommendation with registration URLs
+- Targeted next steps prioritized by domain weakness
+- Exam strategy and day-of tips
 
 ---
 
@@ -60,21 +68,24 @@ Built for **AgentsLeague Battle #2 - Reasoning Agents** with Microsoft Foundry.
         ┌─────────────────────────────────────────┐
         │  1. Learning Path Curator               │
         │     • Searches Microsoft Learn (MCP)    │
+        │     • Adapts to student level           │
         │     • Prioritizes domains by weight     │
         │     • Output: CuratedLearningPlan       │
         └─────────────────────────────────────────┘
                               ↓
         ┌─────────────────────────────────────────┐
         │  2. Study Plan Generator                │
+        │     • Considers study availability      │
         │     • Creates weekly schedule           │
-        │     • Defines daily sessions            │
+        │     • Defines daily sessions with URLs  │
         │     • Output: StudyPlan                 │
         └─────────────────────────────────────────┘
                               ↓
         ┌─────────────────────────────────────────┐
         │  3. Engagement Agent                    │
-        │     • Schedules reminders               │
-        │     • Sends motivational messages       │
+        │     • Schedules reminders with links    │
+        │     • Adaptive motivational tone        │
+        │     • Output: EngagementPlan            │
         └─────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
@@ -113,11 +124,11 @@ Built for **AgentsLeague Battle #2 - Reasoning Agents** with Microsoft Foundry.
 
 | Agent | Temperature | Role | Responsibilities |
 |-------|-------------|------|------------------|
-| **Learning Path Curator** | 0.3 | Content Discovery | Search & rank Microsoft Learn paths by relevance |
-| **Study Plan Generator** | 0.4 | Planning | Create timelines, sessions, milestones (2h/day) |
-| **Engagement Agent** | 0.6 | Motivation | Schedule reminders, send motivational messages |
+| **Learning Path Curator** | 0.3 | Content Discovery | Search Microsoft Learn paths adapted to student level |
+| **Study Plan Generator** | 0.4 | Planning | Create realistic timelines based on student availability |
+| **Engagement Agent** | 0.6 | Motivation | Generate level-appropriate reminders with resource links |
 | **Assessment Agent** | 0.2 | Evaluation | Generate quizzes, grade answers, provide feedback |
-| **Exam Plan Agent** | 0.3 | Certification | Recommend exams, provide registration details |
+| **Exam Plan Agent** | 0.3 | Readiness Analysis | Assess domain performance, recommend exam timing, provide preparation timeline |
 
 ---
 
@@ -216,25 +227,47 @@ What Microsoft certification topics are you interested in?
 Your email for reminders?
 > student@example.com
 
+What is your experience level? (beginner/intermediate/advanced)
+> beginner
+
+How many days per week can you study? (1-7)
+> 5
+
+How many hours per day can you dedicate? (0.5-8.0)
+> 2.0
+
+[CONFIGURATION]
+✓ Topics: Azure AI Fundamentals
+✓ Level: beginner
+✓ Study schedule: 5 days/week, 2.0 hours/day
+✓ Total weekly hours: 10.0 hours/week
+
 ======================================================================
 PHASE 1: PREPARATION SUBWORKFLOW (Sequential)
 ======================================================================
 
 [AGENT: LEARNING_PATH_CURATOR]
-✓ 3 Microsoft Learn paths curated
-  - Azure AI Fundamentals (1h)
-  - Azure Machine Learning (2h)
-  - NLP on Azure (1.5h)
+✓ 3 Microsoft Learn paths curated (beginner-friendly)
+  - Azure AI Fundamentals: AI Overview (8h, difficulty: beginner)
+  - Get started with AI on Azure (6h, difficulty: beginner)
+  - Explore Azure AI Services (5h, difficulty: beginner)
+✓ 4 priority domains identified
+✓ Relevance scores: 10/10, 9/10, 9/10
 
 [AGENT: STUDY_PLAN_GENERATOR]
-✓ 4-week study plan created
-  - 24 sessions of 2 hours
-  - 4 milestones: 25%, 50%, 75%, 100%
-  - Estimated completion: [date]
+✓ 6-week study plan created (adapted to 5 days/week × 2h/day)
+  - 30 total sessions (10h/week = 60 hours total)
+  - Daily sessions matched to availability
+  - 4 milestones: Week 2 (25%), Week 3 (50%), Week 5 (75%), Week 6 (100%)
+  - Rest days: Weekends
 
 [AGENT: ENGAGEMENT_AGENT]
-✓ 24 reminders scheduled
-✓ Motivational message sent
+✓ 33 reminders scheduled
+  - 9 session reminders (with module URLs)
+  - 18 buffer reminders (catch-up/review)
+  - 3 milestone reminders
+  - 3 assessment reminders
+✓ Motivational strategy: Beginner-supportive with confidence building
 
 ======================================================================
 PHASE 2: HUMAN-IN-THE-LOOP CHECKPOINT
@@ -265,10 +298,54 @@ PHASE 4: CERTIFICATION PLANNING
 ======================================================================
 
 [AGENT: EXAM_PLAN_AGENT]
-✓ Recommended certification: AI-900
-✓ Registration URL provided
-✓ Study resources listed
-✓ Exam day tips shared
+
+📋 EXAM READINESS ASSESSMENT
+Certification: AI-900 - Microsoft Azure AI Fundamentals
+Level: Fundamentals
+Registration: https://learn.microsoft.com/certifications/exams/ai-900
+
+📊 READINESS STATUS:
+  ⚠️ Status: NEARLY READY
+  📈 Overall Score: 80%
+  🎯 Confidence: Medium
+
+📚 DOMAIN PERFORMANCE:
+  🟢 Azure AI workloads and considerations
+     Weight: 15-20% | Score: 90% | Status: strong
+
+  🟢 Machine learning principles on Azure
+     Weight: 30-35% | Score: 85% | Status: strong
+
+  🟡 Computer vision workloads on Azure
+     Weight: 15-20% | Score: 65% | Status: adequate
+
+  🟢 Natural Language Processing workloads
+     Weight: 25-30% | Score: 80% | Status: strong
+
+💡 RECOMMENDATION:
+  ⚠️ Action: DELAY AND REINFORCE
+  📝 Justification: Your score of 80% is solid, but reinforcing Computer Vision
+      (adequate at 65%) will increase confidence before booking.
+
+⏱️ PREPARATION TIMELINE:
+  • Days needed: 7
+  • Suggested exam date: 1-2 weeks from now
+  • Rationale: Spend 1 week strengthening Computer Vision concepts (estimated
+    8-10 additional study hours) before booking your exam.
+
+🎯 TARGETED NEXT STEPS:
+  1. Focus: Computer Vision workloads on Azure
+     Action: Complete hands-on labs for Custom Vision and Form Recognizer services.
+
+🧠 EXAM STRATEGY:
+  • Focus on scenario-based questions involving Computer Vision and NLP
+  • Review Azure AI service pricing models and use case selection
+  • Practice time management: allocate 90 seconds per question
+
+📝 EXAM DAY TIPS:
+  • Arrive 15 minutes early to the testing center
+  • Read each question carefully and identify key terms
+  • Use the mark-for-review feature for uncertain questions
 
 [SESSION COMPLETED]
 ```
@@ -306,7 +383,9 @@ MS-CertiMentor-Reasoning-Agent/
 │   ├── models/                   # Pydantic data models
 │   │   ├── quiz_models.py       # Quiz structured output
 │   │   ├── learning_path_models.py  # Learning path data
-│   │   └── study_plan_models.py # Study plan data
+│   │   ├── study_plan_models.py # Study plan data
+│   │   ├── engagement_models.py # Engagement & reminder data
+│   │   └── exam_plan_models.py  # Exam readiness & certification planning
 │   │
 │   ├── tools/                    # Tool functions
 │   │   ├── microsoft_learn_tools.py  # MCP integration
@@ -341,6 +420,126 @@ MS-CertiMentor-Reasoning-Agent/
 
 ---
 
+## 🎯 Personalization Flow
+
+The system adapts to each student through a comprehensive input collection process:
+
+### User Configuration Inputs
+
+| Input | Values | Impact |
+|-------|--------|--------|
+| **Certification Topics** | Free text (e.g., "Azure AI Fundamentals") | Determines which Microsoft Learn paths to search |
+| **Email** | Email address | Used for reminder notifications (console simulation in MVP) |
+| **Experience Level** | `beginner` / `intermediate` / `advanced` | • Learning Path Curator selects appropriate content difficulty<br>• Engagement Agent adapts motivational tone<br>• Assessment questions complexity |
+| **Study Days/Week** | 1-7 days | Study Plan Generator creates realistic weekly schedules |
+| **Daily Hours** | 0.5-8.0 hours | Determines session length and total plan duration |
+
+### How Each Agent Uses This Information
+
+**Learning Path Curator**
+- Filters Microsoft Learn paths by difficulty matching user level
+- Beginner → foundational paths, simple explanations
+- Intermediate → practical application, real-world scenarios
+- Advanced → deep-dive content, optimization techniques
+
+**Study Plan Generator**
+- Calculates total weekly capacity: `days × hours = weekly hours`
+- Distributes learning modules across available days
+- Adjusts plan duration to match realistic completion timeline
+- Example: 5 days/week × 2 hours/day = 10 hours/week → 6-week plan for 60-hour curriculum
+
+**Engagement Agent**
+- **Beginner tone**: Supportive, confidence-building, celebrates small wins
+- **Intermediate tone**: Challenge-oriented, practical application focus
+- **Advanced tone**: Performance-focused, mastery emphasis
+- Reminder frequency matches study schedule (5 days/week → no weekend reminders)
+
+### Example Configurations
+
+**Configuration 1: Busy Professional**
+```
+Level: intermediate
+Days: 3 days/week
+Hours: 1.5 hours/day
+→ Result: 9-week extended plan, practical focus, flexible pacing
+```
+
+**Configuration 2: Full-time Student**
+```
+Level: beginner
+Days: 6 days/week
+Hours: 4 hours/day
+→ Result: 3-week intensive plan, supportive tone, fast-track
+```
+
+**Configuration 3: Weekend Learner**
+```
+Level: advanced
+Days: 2 days/week (weekends)
+Hours: 5 hours/day
+→ Result: 6-week plan, deep-dive content, concentrated sessions
+```
+
+---
+
+## 📈 Exam Readiness Assessment System
+
+The Exam Plan Agent uses a sophisticated multi-criteria decision system to determine student readiness:
+
+### Decision Thresholds
+
+| Overall Score | Status | Recommended Action | Timeline |
+|---------------|--------|-------------------|----------|
+| **≥80%** + No critical risks | ✅ Ready | Book exam immediately | Within 1 week |
+| **65-79%** | ⚠️ Nearly Ready | Delay and reinforce weak areas | 1-2 weeks |
+| **<65%** | ❌ Not Ready | Rebuild foundation | 3-4+ weeks |
+
+### Critical Risk Detection
+
+A **critical risk** is identified when:
+- A domain with **exam weight >20%** scores **<60%**
+- Example: Machine Learning (30-35% weight) scoring 45% → Critical weakness
+
+### Domain Status Classification
+
+| Score Range | Status | Icon | Meaning |
+|-------------|--------|------|---------|
+| **≥70%** | Strong | 🟢 | Well-prepared in this domain |
+| **60-69%** | Adequate | 🟡 | Meets minimum but needs reinforcement |
+| **<60%** | Weak | 🔴 | Requires significant additional study |
+
+### Preparation Timeline Calculation
+
+**Formula**: `(number of weak domains × 5-10 hours per domain) ÷ daily study hours`
+
+**Examples:**
+```
+Scenario 1: Ready Now
+- Overall: 85%, All domains: strong
+- Days needed: null (0 days)
+- Suggested date: "within 1 week"
+
+Scenario 2: Nearly Ready
+- Overall: 72%, 1 adequate domain, 1 weak domain
+- Days needed: 10 days
+- Suggested date: "1-2 weeks from now"
+
+Scenario 3: Not Ready
+- Overall: 58%, 2 weak domains (high-weight)
+- Days needed: 21 days
+- Suggested date: "3-4 weeks from now"
+```
+
+### Confidence Level
+
+| Confidence | When Applied |
+|------------|-------------|
+| **High** | Score ≥80%, consistent performance across all domains |
+| **Medium** | Score 60-79%, some variation in domain performance |
+| **Low** | Score <60%, significant domain weaknesses |
+
+---
+
 ## 🔄 Reasoning Patterns
 
 | Pattern | Implementation | Purpose |
@@ -361,15 +560,23 @@ MS-CertiMentor-Reasoning-Agent/
 - [x] Multi-agent orchestration with Sequential Workflows
 - [x] Azure OpenAI Service integration
 - [x] 5 specialized agents with custom temperatures
-- [x] Structured outputs using Pydantic models
+- [x] Structured outputs using Pydantic models (Quiz, CuratedLearningPlan, StudyPlan, EngagementPlan, ExamPlan)
 - [x] Microsoft Learn MCP integration
 - [x] Interactive certification-style assessments
 - [x] Human approval checkpoints
 - [x] Conditional routing (pass/fail branching)
 - [x] Iteration limits for safety (max 3 attempts)
-- [x] Personalized study plans (2h/day default)
-- [x] Automated reminder scheduling (console simulation)
+- [x] **Level-aware learning path curation** (beginner/intermediate/advanced)
+- [x] **Availability-based study planning** (customizable days/week and hours/day)
+- [x] **Adaptive engagement tone** based on student experience level
+- [x] Automated reminder scheduling with direct resource URLs
 - [x] Detailed feedback and weak area identification
+- [x] Milestone tracking with validation checkpoints
+- [x] Buffer/rest session management
+- [x] **Domain-level performance breakdown** with exam weights and status indicators
+- [x] **Intelligent readiness assessment** with decision thresholds (ready/nearly_ready/not_ready)
+- [x] **Preparation timeline calculator** with realistic date suggestions
+- [x] **Critical risk detection** for high-weight weak domains
 
 ### 🔮 Future Enhancements
 
@@ -415,20 +622,63 @@ The system uses Pydantic v2 models for structured outputs from agents:
 ```python
 {
   "plan_title": "AI-900 Certification Study Plan",
-  "total_duration_weeks": 4,
+  "total_duration_weeks": 6,
   "daily_hours_target": 2.0,
+  "study_days_per_week": 5,
   "weeks": [
     {
       "week_number": 1,
       "week_theme": "Azure AI Fundamentals",
-      "sessions": [...]
+      "total_hours": 10.0,
+      "sessions": [
+        {
+          "day_number": 1,
+          "day_of_week": "Monday",
+          "session_type": "learning",
+          "topic": "Introduction to AI",
+          "estimated_hours": 2.0,
+          "resources": ["https://learn.microsoft.com/training/modules/get-started-ai-fundamentals/"]
+        }
+      ]
     }
   ],
   "milestones": [
-    {"percentage": 25, "week_number": 1, "description": "..."},
-    {"percentage": 50, "week_number": 2, "description": "..."},
-    {"percentage": 75, "week_number": 3, "description": "..."},
-    {"percentage": 100, "week_number": 4, "description": "..."}
+    {"percentage": 25, "week_number": 2, "description": "..."},
+    {"percentage": 50, "week_number": 3, "description": "..."},
+    {"percentage": 75, "week_number": 5, "description": "..."},
+    {"percentage": 100, "week_number": 6, "description": "..."}
+  ]
+}
+```
+
+### EngagementPlan (Engagement Agent)
+```python
+{
+  "certification_goal": "AI-900",
+  "user_level": "beginner",
+  "total_reminders": 33,
+  "study_duration_weeks": 6,
+  "reminders": [
+    {
+      "date_time": "Day 1 (Monday)",
+      "study_item": "Introduction to AI",
+      "reminder_type": "session",
+      "reminder": "Great start! Today you'll explore AI basics and Azure AI services.",
+      "link": "https://learn.microsoft.com/training/modules/get-started-ai-fundamentals/"
+    },
+    {
+      "date_time": "Week 2",
+      "study_item": "25% Milestone",
+      "reminder_type": "milestone",
+      "reminder": "Congratulations! You've completed 25% of your study plan.",
+      "link": null
+    }
+  ],
+  "motivation_strategy": "Beginner-supportive approach with confidence building and celebration of small wins",
+  "accountability_tips": [
+    "Set a specific study time each day and treat it like an appointment",
+    "Track your progress visually with a checklist or calendar",
+    "Join a study group or find an accountability partner"
   ]
 }
 ```
@@ -453,6 +703,82 @@ The system uses Pydantic v2 models for structured outputs from agents:
 }
 ```
 
+### ExamPlan (Exam Plan Agent)
+```python
+{
+  "exam": {
+    "code": "AI-900",
+    "name": "Microsoft Azure AI Fundamentals",
+    "level": "fundamentals",
+    "registration_url": "https://learn.microsoft.com/certifications/exams/ai-900"
+  },
+  "readiness_assessment": {
+    "overall_score": 85,
+    "status": "ready",
+    "confidence_level": "high",
+    "critical_risks": [],
+    "domain_breakdown": [
+      {
+        "domain_name": "Describe AI workloads and considerations",
+        "exam_weight": "15-20%",
+        "score": 90,
+        "status": "strong"
+      },
+      {
+        "domain_name": "Describe fundamental principles of machine learning on Azure",
+        "exam_weight": "30-35%",
+        "score": 85,
+        "status": "strong"
+      },
+      {
+        "domain_name": "Describe features of computer vision workloads on Azure",
+        "exam_weight": "15-20%",
+        "score": 75,
+        "status": "strong"
+      },
+      {
+        "domain_name": "Describe features of NLP workloads on Azure",
+        "exam_weight": "25-30%",
+        "score": 88,
+        "status": "strong"
+      }
+    ]
+  },
+  "recommendation": {
+    "action": "book_exam",
+    "justification": "Your overall score of 85% exceeds the readiness threshold with strong performance across all high-weight domains."
+  },
+  "preparation_timeline": {
+    "days_needed": null,
+    "suggested_exam_date_range": "within 1 week",
+    "rationale": "You are ready to book your exam now. All domains show strong performance with no critical gaps."
+  },
+  "targeted_next_steps": [
+    {
+      "focus_domain": "Computer Vision workloads",
+      "recommended_action": "Review Custom Vision API documentation to boost confidence in this area."
+    }
+  ],
+  "exam_strategy": [
+    "Focus on scenario-based questions involving Computer Vision and NLP",
+    "Review Azure AI service pricing models and use case selection",
+    "Practice time management: allocate 90 seconds per question on average"
+  ],
+  "exam_day_tips": [
+    "Arrive 15 minutes early to the testing center",
+    "Read each question carefully and identify key terms",
+    "Use the mark-for-review feature for uncertain questions"
+  ]
+}
+```
+
+**Key Features:**
+- **Domain Performance Breakdown**: Transparent score breakdown by exam domain with weights and status (strong/adequate/weak)
+- **Preparation Timeline**: Realistic timeline with days needed, suggested exam dates, and clear rationale
+- **Decision Thresholds**: ≥80% → ready to book, 65-79% → delay and reinforce, <65% → rebuild foundation
+- **Critical Risk Detection**: Identifies high-weight domains (>20%) scoring <60%
+- **Actionable Next Steps**: Domain-specific preparation actions prioritized by weakness
+
 ---
 
 ## 🔧 MCP Integration
@@ -469,6 +795,19 @@ The system integrates with Microsoft Learn via the Model Context Protocol (MCP):
 - Server-Sent Events (SSE) support
 - Automatic retry with exponential backoff
 - Error handling and fallback mechanisms
+
+**Resource URL Flow:**
+```
+Microsoft Learn MCP
+        ↓
+Learning Path Curator (extracts module URLs)
+        ↓
+Study Plan Generator (includes URLs in DailySession.resources)
+        ↓
+Engagement Agent (uses URLs in session reminders)
+```
+
+This ensures every learning session reminder links directly to the correct Microsoft Learn module.
 
 ---
 

@@ -2,7 +2,42 @@
 Assessment Workflow - Interactive quiz and evaluation.
 """
 import json
-from src.models import Quiz, DifficultyLevel
+import re
+from src.models import Quiz, DifficultyLevel, ExamPlan, DomainStatus
+
+
+def extract_json_from_text(text: str) -> dict:
+    """
+    Extract JSON from text, handling markdown code blocks.
+
+    Args:
+        text: Text that may contain JSON with or without markdown
+
+    Returns:
+        Parsed JSON dict
+
+    Raises:
+        json.JSONDecodeError: If no valid JSON found
+    """
+    # Try direct JSON parse first
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    # Try extracting from markdown code block
+    json_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', text, re.DOTALL)
+    if json_match:
+        json_str = json_match.group(1)
+        return json.loads(json_str)
+
+    # Try finding JSON object in text
+    json_match = re.search(r'\{.*\}', text, re.DOTALL)
+    if json_match:
+        json_str = json_match.group(0)
+        return json.loads(json_str)
+
+    raise json.JSONDecodeError("No valid JSON found", text, 0)
 
 
 async def run_assessment(agent, topics: str, study_plan_summary: str = None):
@@ -24,28 +59,16 @@ async def run_assessment(agent, topics: str, study_plan_summary: str = None):
     print("PHASE 3: ASSESSMENT")
     print("="*70)
 
-    # Improved prompt with context from study plan
+    # Build prompt with context (agent instructions already define format and requirements)
+    prompt = f"""Generate a readiness assessment quiz for: {topics}"""
+
     if study_plan_summary:
-        prompt = f"""Generate a readiness assessment for: {topics}
+        prompt += f"""
 
 Study Plan Context:
 {study_plan_summary}
 
-Follow all requirements from your instructions including:
-- Exactly 10 questions
-- Difficulty distribution: 3 easy, 5 medium, 2 hard
-- At least 2 scenario-based questions
-- Include domain, learning objective, Bloom level, explanation, and reference URL for each question
-- Return STRICT JSON only (no markdown, no extra text)"""
-    else:
-        prompt = f"""Generate a readiness assessment for: {topics}
-
-Follow all requirements from your instructions including:
-- Exactly 10 questions
-- Difficulty distribution: 3 easy, 5 medium, 2 hard
-- At least 2 scenario-based questions
-- Include domain, learning objective, Bloom level, explanation, and reference URL for each question
-- Return STRICT JSON only (no markdown, no extra text)"""
+Use this context to generate relevant, contextual questions that align with what the student has studied."""
 
     print("\n[AGENTE 4/5] Assessment Agent (Temperatura: 0.2)")
     print("-" * 70)
@@ -169,27 +192,119 @@ async def run_exam_planning(agent, topics: str, percentage: float, quiz=None):
     print("PHASE 4: CERTIFICATION PLANNING")
     print("="*70)
 
-    # Include quiz performance details if available
-    quiz_summary = ""
+    # Build prompt with performance context (agent instructions already define output format)
+    prompt = f"""Analyze readiness and recommend certification exam plan.
+
+Certification Topics: {topics}
+Overall Score: {percentage:.0f}%"""
+
+    # Include detailed quiz performance if available
     if quiz:
         easy_correct = sum(1 for q in quiz.get_questions_by_difficulty(DifficultyLevel.EASY))
         medium_correct = sum(1 for q in quiz.get_questions_by_difficulty(DifficultyLevel.MEDIUM))
         hard_correct = sum(1 for q in quiz.get_questions_by_difficulty(DifficultyLevel.HARD))
-        quiz_summary = f"""
-Assessment Performance:
-- Easy questions: {easy_correct}/3
-- Medium questions: {medium_correct}/5
-- Hard questions: {hard_correct}/2"""
 
-    prompt = f"""Recommend the Microsoft certification and exam plan for: {topics}
+        prompt += f"""
 
-Student score: {percentage:.0f}%
-{quiz_summary}
-
-Provide exam code, registration details, and next steps."""
+Assessment Performance Breakdown:
+- Easy questions: {easy_correct}/3 ({easy_correct/3*100:.0f}%)
+- Medium questions: {medium_correct}/5 ({medium_correct/5*100:.0f}%)
+- Hard questions: {hard_correct}/2 ({hard_correct/2*100:.0f}%)"""
 
     print("\n[AGENTE 5/5] Exam Plan Agent (Temperatura: 0.3)")
     print("-" * 70)
 
     result = await agent.run(prompt)
-    print(result.text)
+
+    # Parse and display structured ExamPlan
+    try:
+        # Try to parse structured output
+        if hasattr(result, 'structured_output') and result.structured_output:
+            plan = result.structured_output
+        else:
+            # Fallback: parse from text (handles markdown)
+            plan_data = extract_json_from_text(result.text)
+            plan = ExamPlan(**plan_data)
+
+        # Display exam plan nicely
+        print(f"\n📋 EXAM READINESS ASSESSMENT")
+        print(f"Certification: {plan.exam.code} - {plan.exam.name}")
+        print(f"Level: {plan.exam.level.value.capitalize()}")
+        print(f"Registration: {plan.exam.registration_url}\n")
+
+        # Readiness assessment
+        status_icon = {
+            "ready": "✅",
+            "nearly_ready": "⚠️",
+            "not_ready": "❌"
+        }.get(plan.readiness_assessment.status.value, "❓")
+
+        print(f"📊 READINESS STATUS:")
+        print(f"  {status_icon} Status: {plan.readiness_assessment.status.value.upper().replace('_', ' ')}")
+        print(f"  📈 Overall Score: {plan.readiness_assessment.overall_score}%")
+        print(f"  🎯 Confidence: {plan.readiness_assessment.confidence_level.value.capitalize()}")
+
+        # Domain breakdown
+        print(f"\n📚 DOMAIN PERFORMANCE:")
+        for domain in plan.readiness_assessment.domain_breakdown:
+            status_icon = {
+                DomainStatus.STRONG: "🟢",
+                DomainStatus.ADEQUATE: "🟡",
+                DomainStatus.WEAK: "🔴"
+            }.get(domain.status, "⚪")
+
+            print(f"\n  {status_icon} {domain.domain_name}")
+            print(f"     Weight: {domain.exam_weight} | Score: {domain.score}% | Status: {domain.status.value}")
+
+        # Critical risks
+        if plan.readiness_assessment.critical_risks:
+            print(f"\n⚠️ CRITICAL RISKS ({len(plan.readiness_assessment.critical_risks)}):")
+            for risk in plan.readiness_assessment.critical_risks:
+                print(f"  • {risk}")
+
+        # Recommendation
+        action_icon = {
+            "book_exam": "✅",
+            "delay_and_reinforce": "⚠️",
+            "rebuild_foundation": "🔄"
+        }.get(plan.recommendation.action.value, "❓")
+
+        print(f"\n💡 RECOMMENDATION:")
+        print(f"  {action_icon} Action: {plan.recommendation.action.value.upper().replace('_', ' ')}")
+        print(f"  📝 Justification: {plan.recommendation.justification}")
+
+        # Preparation timeline
+        print(f"\n⏱️ PREPARATION TIMELINE:")
+        if plan.preparation_timeline.days_needed:
+            print(f"  • Days needed: {plan.preparation_timeline.days_needed}")
+            if plan.preparation_timeline.suggested_exam_date_range:
+                print(f"  • Suggested exam date: {plan.preparation_timeline.suggested_exam_date_range}")
+        else:
+            print(f"  • Ready to book now!")
+            if plan.preparation_timeline.suggested_exam_date_range:
+                print(f"  • Suggested booking: {plan.preparation_timeline.suggested_exam_date_range}")
+        print(f"  • Rationale: {plan.preparation_timeline.rationale}")
+
+        # Targeted next steps
+        if plan.targeted_next_steps:
+            print(f"\n🎯 TARGETED NEXT STEPS ({len(plan.targeted_next_steps)}):")
+            for i, action in enumerate(plan.targeted_next_steps, 1):
+                print(f"\n  {i}. Focus: {action.focus_domain}")
+                print(f"     Action: {action.recommended_action}")
+
+        # Exam strategy
+        if plan.exam_strategy:
+            print(f"\n🧠 EXAM STRATEGY:")
+            for tip in plan.exam_strategy:
+                print(f"  • {tip}")
+
+        # Exam day tips
+        if plan.exam_day_tips:
+            print(f"\n📝 EXAM DAY TIPS:")
+            for tip in plan.exam_day_tips:
+                print(f"  • {tip}")
+
+    except Exception as e:
+        # Fallback to plain text if parsing fails
+        print(f"\n[WARNING] Could not parse structured output: {e}")
+        print(result.text)

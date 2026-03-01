@@ -28,10 +28,10 @@ def print_banner(endpoint: str, model: str):
 
 def get_user_input():
     """
-    Collect user input for certification topics and email.
+    Collect user input for certification topics, email, level, and study schedule.
 
     Returns:
-        tuple: (topics, email)
+        tuple: (topics, email, user_level, study_days_per_week, daily_hours)
     """
     print("What Microsoft certification topics are you interested in?")
     print("Examples: 'Azure AI', 'Azure Fundamentals', 'Power Platform'")
@@ -43,16 +43,62 @@ def get_user_input():
         print("\nYour email for reminders?")
         email = input("Your email: ").strip() or "student@certimentor.com"
 
-        return topics, email
+        print("\nWhat is your current knowledge level?")
+        print("Options: 'beginner', 'intermediate', 'advanced'")
+        user_level = input("Your level: ").strip().lower()
+        if user_level not in ["beginner", "intermediate", "advanced"]:
+            print("Invalid level. Defaulting to 'beginner'")
+            user_level = "beginner"
+
+        print("\nHow many days per week can you study?")
+        print("Recommended: 5 days (Monday-Friday)")
+        study_days_input = input("Days per week (1-7): ").strip()
+        try:
+            study_days_per_week = int(study_days_input)
+            if study_days_per_week < 1 or study_days_per_week > 7:
+                print("Invalid number. Using default: 5 days")
+                study_days_per_week = 5
+        except ValueError:
+            print("Invalid input. Using default: 5 days")
+            study_days_per_week = 5
+
+        print("\nHow many hours per day can you dedicate to studying?")
+        print("Recommended: 2 hours/day")
+        daily_hours_input = input("Hours per day (0.5-8): ").strip()
+        try:
+            daily_hours = float(daily_hours_input)
+            if daily_hours < 0.5 or daily_hours > 8:
+                print("Invalid number. Using default: 2 hours")
+                daily_hours = 2.0
+        except ValueError:
+            print("Invalid input. Using default: 2 hours")
+            daily_hours = 2.0
+
+        print("\n" + "="*70)
+        print("[SUMMARY] Your Study Configuration")
+        print("="*70)
+        print(f"Topics: {topics}")
+        print(f"Email: {email}")
+        print(f"Level: {user_level}")
+        print(f"Study schedule: {study_days_per_week} days/week, {daily_hours} hours/day")
+        print(f"Total weekly hours: {study_days_per_week * daily_hours} hours/week")
+        print("="*70)
+
+        return topics, email, user_level, study_days_per_week, daily_hours
 
     except (EOFError, OSError):
         # Non-interactive mode or no stdin available: use defaults
         print("\n[AUTO MODE] Using default test values")
         topics = "Azure AI Fundamentals"
         email = "student@certimentor.com"
+        user_level = "beginner"
+        study_days_per_week = 5
+        daily_hours = 2.0
         print(f"Your topics: {topics}")
         print(f"Your email: {email}")
-        return topics, email
+        print(f"Your level: {user_level}")
+        print(f"Study schedule: {study_days_per_week} days/week, {daily_hours} hours/day")
+        return topics, email, user_level, study_days_per_week, daily_hours
 
 
 def human_checkpoint():
@@ -119,7 +165,7 @@ async def run_complete_workflow(agents: dict, endpoint: str, model: str):
     print_banner(endpoint, model)
 
     # Get user input
-    topics, email = get_user_input()
+    topics, email, user_level, study_days_per_week, daily_hours = get_user_input()
 
     print("\n" + "="*70)
     print("[START] Launching multi-agent workflow...")
@@ -139,7 +185,14 @@ async def run_complete_workflow(agents: dict, endpoint: str, model: str):
         agents["engagement"]
     )
 
-    conversation, curated_plan, study_plan = await run_preparation_workflow(prep_workflow, topics, email, user_level="beginner")
+    conversation, curated_plan, study_plan = await run_preparation_workflow(
+        prep_workflow,
+        topics,
+        email,
+        user_level=user_level,
+        study_days_per_week=study_days_per_week,
+        daily_hours=daily_hours
+    )
     print_preparation_results(conversation)
 
     # Extract study plan summary for assessment context

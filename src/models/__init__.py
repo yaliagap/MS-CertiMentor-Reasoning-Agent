@@ -24,6 +24,25 @@ from .study_plan_models import (
     Milestone,
     SessionType
 )
+from .engagement_models import (
+    EngagementPlan,
+    StudyReminder,
+    ReminderType
+)
+from .exam_plan_models import (
+    ExamPlan,
+    ExamInfo,
+    ReadinessAssessment,
+    Recommendation,
+    TargetedAction,
+    PreparationTimeline,
+    DomainPerformance,
+    ExamLevel,
+    ReadinessStatus,
+    ConfidenceLevel,
+    RecommendedAction,
+    DomainStatus
+)
 
 __all__ = [
     # Quiz models
@@ -45,5 +64,22 @@ __all__ = [
     "WeekPlan",
     "DailySession",
     "Milestone",
-    "SessionType"
+    "SessionType",
+    # Engagement models
+    "EngagementPlan",
+    "StudyReminder",
+    "ReminderType",
+    # Exam plan models
+    "ExamPlan",
+    "ExamInfo",
+    "ReadinessAssessment",
+    "Recommendation",
+    "TargetedAction",
+    "PreparationTimeline",
+    "DomainPerformance",
+    "ExamLevel",
+    "ReadinessStatus",
+    "ConfidenceLevel",
+    "RecommendedAction",
+    "DomainStatus"
 ]
