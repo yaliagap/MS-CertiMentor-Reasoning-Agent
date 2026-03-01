@@ -484,6 +484,158 @@ Registration: https://learn.microsoft.com/certifications/exams/ai-900
 
 ---
 
+## 📸 System Walkthrough - Visual Demo
+
+The following screenshots demonstrate a complete end-to-end execution of the MS-CertiMentor system, showing all 6 agents in action with real outputs.
+
+### 🚀 System Initialization
+
+**User Input Collection**
+
+![User Inputs](screenshoots/1.%20User%20Inputs.png)
+*Interactive prompts collecting study topic (Generative AI), experience level (Intermediate), and schedule (4 days/week, 4 hours/day)*
+
+**Workflow Launch**
+
+![Summary and Start](screenshoots/2.%20Summary%20and%20Start%20Workflow.png)
+*System summary showing 6 specialized agents ready to execute with Azure OpenAI*
+
+---
+
+### 📚 Phase 1: Agent 1 - Learning Path Curator
+
+**Priority Domains Identification**
+
+![Learning Curator - Domains](screenshoots/3.1.%20Learning%20Curator%20Agent.png)
+*Agent analyzes exam structure and identifies priority domains with weights (e.g., "Working with Generative AI in Azure" - 30%)*
+
+**Recommended Learning Paths**
+
+![Learning Curator - Paths](screenshoots/3.2.%20Learning%20Curator%20Agent%20%20-%20Learning%20Paths.png)
+*Top 3 Microsoft Learn paths curated with relevance scores, duration, and level alignment*
+
+**Learning Plan Overview**
+
+![Learning Curator - Overview](screenshoots/3.3%20Learning%20Curator%20Agent%20-%20Overview.png)
+*Complete learning plan with module breakdown and study sequence*
+
+---
+
+### 📅 Phase 2: Agent 2 - Study Plan Generator
+
+**Study Plan Creation**
+
+![Study Plan Generator](screenshoots/4.1.%20Study%20Plan%20Generator.png)
+*Personalized study plan adapted to student's 4 days/week × 4 hours/day schedule*
+
+**Weekly Schedule Breakdown**
+
+![Study Plan - Weekly Schedule](screenshoots/4.2.%20Study%20Plan%20Generator%20-%20Weekyl%20Schedule.png)
+*Week-by-week session breakdown with daily objectives, milestones, and rest days*
+
+---
+
+### 🔔 Phase 3: Agent 3 - Engagement Agent
+
+**Reminder Configuration**
+
+![Engagement Agent](screenshoots/5.1.%20Engagement%20Agent.png)
+*Automated reminder system setup with motivational messages tailored to intermediate level*
+
+**Scheduled Reminders**
+
+![Engagement - Reminders](screenshoots/5.2.%20Enagement%20Agent%20-%20Reminders.png)
+*Complete list of 8+ study reminders with direct Microsoft Learn module links*
+
+---
+
+### ✋ Phase 4: Human-in-the-Loop Checkpoint
+
+**Assessment Confirmation**
+
+![Human Checkpoint](screenshoots/6.%20Human%20In%20The%20Loop%20-%20Assessment%20Confirmation.png)
+*Strategic checkpoint asking student to confirm readiness before proceeding to assessment*
+
+---
+
+### 📝 Phase 5: Agent 4 - Assessment Agent (Quiz Generation)
+
+**Quiz Generation**
+
+![Assessment Agent - Quiz](screenshoots/7.1.%20Assessment%20Agent%20-%20Quiz.png)
+*Generation of 10 certification-style questions with difficulty distribution (30% Easy, 50% Medium, 20% Hard)*
+
+**Quiz Questions Overview**
+
+![Assessment - 10 Questions](screenshoots/7.2.%20Assessment%20Agent%20-%20Quiz%20-%2010%20Questions.png)
+*Complete set of 10 multiple-choice questions mapped to exam domains*
+
+**Interactive Quiz Interface**
+
+![Assessment - Interactive Quiz](screenshoots/7.3.%20Asessment%20Agent-%20Interactive%20Quiz.png)
+*Student answering questions interactively through the CLI interface*
+
+**Quiz Completion**
+
+![Assessment - Quiz Complete](screenshoots/7.4.%20Asessment%20Agent-%20Interactive%20Quiz%20Complete.png)
+*All 10 answers recorded and ready for evaluation*
+
+---
+
+### 🎓 Phase 6: Agent 5 - Assessment Evaluator Agent (Educational Feedback)
+
+**Evaluation Summary**
+
+![Assessment Evaluator](screenshoots/8.1.%20Asessment%20Evaluation%20Agent.png)
+*Overall performance metrics: 10/10 (100%), PASSED status, domain-level breakdown*
+
+**Domain Performance Analysis**
+
+![Assessment Evaluator - Feedback](screenshoots/8.2.%20Assessment%20Evaluation%20Agent%20-%20Feedback.png)
+*Performance breakdown by exam domain with STRONG/ADEQUATE/WEAK classifications*
+
+**Detailed Question-by-Question Feedback**
+
+![Assessment Evaluator - Detailed Feedback](screenshoots/8.3.%20Asessment%20Evaluation%20Agent%20-%20Feedback%20Detailed.png)
+*In-depth explanations for each question: why answers are correct/incorrect, key concepts, and study tips*
+
+**Overall Feedback & Next Steps**
+
+![Assessment Evaluator - Overall](screenshoots/8.4.%20Asessment%20Evaluation%20Agent-%20Overall%20Feedback.png)
+*Comprehensive feedback with strengths, motivational message, and top 3 focus areas for improvement*
+
+---
+
+### 🏆 Phase 7: Agent 6 - Exam Plan Agent (Certification Recommendation)
+
+**Exam Readiness Assessment**
+
+![Exam Plan Agent](screenshoots/9.%20Exam%20Plan%20Agent.png)
+*Final readiness evaluation: READY status (100%), AI-900 certification recommendation, registration URL*
+
+**Strategic Recommendations**
+
+![Exam Plan - Recommendations](screenshoots/9.1.%20Examen%20Plan%20Agent%20-%20Recommendations.png)
+*Action recommendation (BOOK EXAM), preparation timeline, and targeted next steps by domain*
+
+**Exam Strategy & Tips**
+
+![Exam Plan - Strategy](screenshoots/9.2.%20Examen%20Plan%20Agent%20-%20Examen%20Tips%20and%20Strategy.png)
+*Strategic exam approach tips and practical exam day advice for maximizing success*
+
+---
+
+### 🎯 Key Observations from Demo
+
+✅ **All 6 agents executed successfully** in sequential workflow
+✅ **Perfect score (100%)** demonstrates system validation with comprehensive feedback
+✅ **Human-in-the-loop checkpoint** prevented premature assessment
+✅ **Domain-specific analysis** identified strengths across all 3 exam domains
+✅ **Actionable recommendations** provided clear next steps for exam preparation
+✅ **Observability traces** captured in Azure Application Insights (not shown)
+
+---
+
 ## 📁 Project Structure
 
 ```
