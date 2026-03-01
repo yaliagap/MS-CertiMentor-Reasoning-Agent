@@ -127,11 +127,10 @@ Use this context to generate relevant, contextual questions that align with what
     print("="*70)
     print("\nAnswer the 10 questions above:")
 
-    score = 0
-    correct_answers = quiz.get_correct_answers()
     user_answers = []
+    correct_answers = quiz.get_correct_answers()
 
-    # Auto-generated answers for demo mode (use correct answers for auto-pass)
+    # Auto-generated answers for demo mode
     auto_answers = correct_answers.copy()
 
     for i, question in enumerate(sorted(quiz.questions, key=lambda q: q.question_number), 1):
@@ -143,73 +142,70 @@ Use this context to generate relevant, contextual questions that align with what
             print(f"\nQuestion {i} - Your answer (A/B/C/D): [AUTO MODE] {answer}")
 
         user_answers.append(answer)
+        print("✓ Answer recorded")
 
-        # Check answer
-        if answer == question.correct_answer:
-            score += 1
-            print("✓ [CORRECT]")
-        else:
-            print(f"✗ [INCORRECT] (Correct answer: {question.correct_answer})")
-            print(f"   Explanation: {question.explanation}")
-
-    percentage = (score / 10) * 100  # 10 questions now
-    passed = percentage >= 70  # 70% = 7/10 correct
-
-    # Display results
+    # Display completion
     print("\n" + "="*70)
-    print("[ASSESSMENT RESULTS]")
+    print("[ASSESSMENT COMPLETED]")
     print("="*70)
-    print(f"\nScore: {percentage:.0f}% ({score}/10 correct)")
-    print(f"Status: {'✓ [PASSED]' if passed else '✗ [FAILED]'}")
+    print(f"\n✓ All {len(user_answers)} answers recorded")
+    print("\nYour responses will now be evaluated by the Exam Plan Agent...")
+    print("The agent will analyze your performance by domain and provide a detailed readiness assessment.")
 
-    # Show breakdown by difficulty
-    easy_score = sum(1 for i, q in enumerate(sorted(quiz.questions, key=lambda q: q.question_number))
-                     if q.difficulty == DifficultyLevel.EASY and user_answers[i] == q.correct_answer)
-    medium_score = sum(1 for i, q in enumerate(sorted(quiz.questions, key=lambda q: q.question_number))
-                       if q.difficulty == DifficultyLevel.MEDIUM and user_answers[i] == q.correct_answer)
-    hard_score = sum(1 for i, q in enumerate(sorted(quiz.questions, key=lambda q: q.question_number))
-                     if q.difficulty == DifficultyLevel.HARD and user_answers[i] == q.correct_answer)
-
-    print(f"\nBreakdown by difficulty:")
-    print(f"  Easy:   {easy_score}/3 correct")
-    print(f"  Medium: {medium_score}/5 correct")
-    print(f"  Hard:   {hard_score}/2 correct")
-
-    return score, passed, quiz
+    return quiz, user_answers
 
 
-async def run_exam_planning(agent, topics: str, percentage: float, quiz=None):
+async def run_exam_planning(agent, topics: str, quiz: Quiz, user_answers: list):
     """
-    Execute exam planning and certification recommendation.
+    Execute exam planning and certification recommendation based on quiz performance.
 
     Args:
         agent: Exam plan agent
         topics: Topics studied
-        percentage: Assessment score percentage
-        quiz: Optional Quiz object with assessment details
+        quiz: Quiz object with all questions
+        user_answers: List of user's answers (e.g., ['A', 'B', 'C', ...])
     """
     print("\n" + "="*70)
-    print("PHASE 4: CERTIFICATION PLANNING")
+    print("PHASE 4: EXAM READINESS EVALUATION")
     print("="*70)
 
-    # Build prompt with performance context (agent instructions already define output format)
-    prompt = f"""Analyze readiness and recommend certification exam plan.
+    # Build detailed assessment context for the agent
+    prompt = f"""Evaluate student readiness for certification exam.
 
 Certification Topics: {topics}
-Overall Score: {percentage:.0f}%"""
 
-    # Include detailed quiz performance if available
-    if quiz:
-        easy_correct = sum(1 for q in quiz.get_questions_by_difficulty(DifficultyLevel.EASY))
-        medium_correct = sum(1 for q in quiz.get_questions_by_difficulty(DifficultyLevel.MEDIUM))
-        hard_correct = sum(1 for q in quiz.get_questions_by_difficulty(DifficultyLevel.HARD))
+Assessment Details:
+- Total Questions: {quiz.total_questions}
+- Difficulty Distribution: {quiz.difficulty_distribution}
+
+Quiz Questions and Student Answers:
+"""
+
+    # Include each question with student's answer
+    for i, question in enumerate(sorted(quiz.questions, key=lambda q: q.question_number)):
+        user_answer = user_answers[i] if i < len(user_answers) else "N/A"
+        is_correct = user_answer == question.correct_answer
 
         prompt += f"""
+Question {question.question_number}:
+- Domain: {question.domain}
+- Difficulty: {question.difficulty.value}
+- Bloom Level: {question.bloom_level.value}
+- Question: {question.question_text}
+- Correct Answer: {question.correct_answer}
+- Student Answer: {user_answer}
+- Result: {'CORRECT' if is_correct else 'INCORRECT'}
+- Exam Weight Context: This question tests knowledge in the "{question.domain}" domain
+"""
 
-Assessment Performance Breakdown:
-- Easy questions: {easy_correct}/3 ({easy_correct/3*100:.0f}%)
-- Medium questions: {medium_correct}/5 ({medium_correct/5*100:.0f}%)
-- Hard questions: {hard_correct}/2 ({hard_correct/2*100:.0f}%)"""
+    prompt += """
+Based on this assessment, please:
+1. Calculate the overall score and score per domain
+2. Identify which domains are strong, adequate, or weak
+3. Determine the student's readiness status (ready/nearly_ready/not_ready)
+4. Provide a preparation timeline if additional study is needed
+5. Give targeted next steps focusing on weak domains
+"""
 
     print("\n[AGENTE 5/5] Exam Plan Agent (Temperatura: 0.3)")
     print("-" * 70)

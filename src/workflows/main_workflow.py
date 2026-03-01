@@ -128,24 +128,6 @@ def human_checkpoint():
         return True
 
 
-def print_summary(topics: str, percentage: float):
-    """
-    Print final session summary.
-
-    Args:
-        topics: Certification topics studied
-        percentage: Final assessment score
-    """
-    print("\n" + "="*70)
-    print("[SESSION COMPLETED]")
-    print("="*70)
-    print(f"\n[OK] Topics: {topics}")
-    print(f"[OK] Assessment: {percentage:.0f}% (PASSED)")
-    print(f"[OK] All 5 agents executed successfully")
-    print("\nThank you for using MS-CertiMentor!")
-    print("="*70 + "\n")
-
-
 async def run_complete_workflow(agents: dict, endpoint: str, model: str):
     """
     Execute the complete multi-agent workflow.
@@ -218,19 +200,21 @@ async def run_complete_workflow(agents: dict, endpoint: str, model: str):
         return
 
     # Phase 3: Assessment (with study plan context)
-    score, passed, quiz = await run_assessment(
+    quiz, user_answers = await run_assessment(
         agents["assessor"],
         topics,
         study_plan_summary=study_plan_summary
     )
-    percentage = (score / 10) * 100  # 10 questions now
 
-    if not passed:
-        print("\nReview the weak areas and try again. You can do it!")
-        return
-
-    # Phase 4: Exam Planning
-    await run_exam_planning(agents["exam_planner"], topics, percentage, quiz=quiz)
+    # Phase 4: Exam Readiness Evaluation (agent decides if ready or not)
+    await run_exam_planning(agents["exam_planner"], topics, quiz, user_answers)
 
     # Summary
-    print_summary(topics, percentage)
+    print("\n" + "="*70)
+    print("[SESSION COMPLETED]")
+    print("="*70)
+    print(f"\n[OK] Topics: {topics}")
+    print(f"[OK] Assessment: Completed and evaluated")
+    print(f"[OK] All 5 agents executed successfully")
+    print("\nThank you for using MS-CertiMentor!")
+    print("="*70 + "\n")
